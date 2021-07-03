@@ -1,0 +1,77 @@
+{
+  "name": "Soil-Files-Horn-of-Africa",
+  "description": "Soil Files for the Horn of Africa",
+  "metadata": {
+    "temporal_coverage": {"start_time": "1850-01-01T00:00:00", "end_time": "2050-01-01T00:00:00"},
+    "datatype": "SoilFile"
+  },
+  "resources": "resources.json",
+  "standard_variables": [
+    {
+      "name": "soil__water__irrigation",
+      "ontology": "NA",
+      "uri": "http://www.geoscienceontology.org/svo/svl/variable#soil__water__irrigation",
+      "description": "Irrigation"
+    },
+    {
+      "name": "nitrogen__fixation",
+      "ontology": "NA",
+      "uri": "http://www.geoscienceontology.org/svo/svl/variable#nitrogen__fixation",
+      "description": "N fixation"
+    },
+    {
+      "name": "plant__nitrogen_added",
+      "ontology": "NA",
+      "uri": "http://www.geoscienceontology.org/svo/svl/variable#plant__nitrogen_added",
+      "description": "N added"
+    },
+    {
+      "name": "soil~no-rock~dry__mass-per-volume_density",
+      "ontology": "SVO",
+      "uri": "http://www.geoscienceontology.org/svo/svl/variable#soil%7Eno-rock%7Edry__mass-per-volume_density",
+      "description": "bulk density"
+    },
+    {
+      "name": "soil~no-rock_silt__mass_fraction",
+      "ontology": "SVO",
+      "uri": "http://www.geoscienceontology.org/svo/svl/variable#soil%7Eno-rock%40medium_silt__mass_fraction",
+      "description": "silt percentage"
+    },
+    {
+      "name": "soil_rock__volume_fraction",
+      "ontology": "SVO",
+      "uri": "http://www.geoscienceontology.org/svo/svl/variable#soil%40medium_rock__volume_fraction",
+      "description": "rock volume"
+    },
+    {
+      "name": "land_surface_water__usdanrcs_runoff_curve_number",
+      "ontology": "SVO",
+      "uri": "http://www.geoscienceontology.org/svo/svl/variable#%28land_surface%29%40context%7Eon_%28water_runoff%29__usdanrcs_runoff_curve_number",
+      "description": "soil curve number"
+    },
+    {
+      "name": "soil_layer__thickness",
+      "ontology": "SVO",
+      "uri": "http://www.geoscienceontology.org/svo/svl/variable#soil%40medium_water__volume_fraction",
+      "description": "soil moisture content"
+    },
+    {
+      "name": "land_surface__slope",
+      "ontology": "SVO",
+      "uri": "http://www.geoscienceontology.org/svo/svl/variable#land_surface__slope",
+      "description": "slope of the field"
+    },
+    {
+      "name": "organic__mass_fraction",
+      "ontology": "SVO",
+      "uri": "http://www.geoscienceontology.org/svo/svl/variable#soil%40medium_matter%7Eorganic__mass_fraction",
+      "description": "soil organic matter"
+    },
+    {
+      "name": "soil_clay_particle__volume_fraction",
+      "ontology": "SVO",
+      "uri": "http://www.geoscienceontology.org/svo/svl/variable#soil%40medium_%28clay_particle%29__volume_fraction",
+      "description": "clay percentage"
+    }
+  ]
+}
