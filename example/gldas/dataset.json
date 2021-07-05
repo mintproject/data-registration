@@ -1,0 +1,22 @@
+{
+  "name": "GLDAS_NOAA",
+  "description": "GLDAS NOAA Land Surface Model L4 3 hourly 0.25 x 0.25 degree V2.1",
+  "metadata": {
+    "temporal_coverage": {
+      "start_time": "2021-01-01T00:00:00",
+      "end_time": "2021-03-31T00:00:00"
+    },
+    "spatial_coverage": {
+      "type": "BoundingBox",
+      "value": {
+        "xmin": -180.0,
+        "ymin": -60.0,
+        "xmax": 180.0,
+        "ymax": 90.0
+      }
+    },
+    "datatype": "NetCDF"
+  },
+  "resources": "resources.json",
+  "variables": "variables.json"
+}

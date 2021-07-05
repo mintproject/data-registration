@@ -2,6 +2,8 @@ import requests
 import json
 import argparse
 
+global DCAT, PROVID
+
 PROVID = None #"9ef60317-5da5-4050-8bbc-7d6826fee49f"
 DCAT = None #"http://localhost:7000"
 
@@ -28,8 +30,8 @@ def register_dataset(details):
         print("Registering Variables")
         # Register standard variables
         if "standard_variables" in details:
-            stdvars = create_standard_variables(details["standard_variables"])
-            create_dataset_variables(dsid, stdvars)
+            dsvars = create_standard_variables(details["variables"])
+            create_dataset_variables(dsid, dsvars)
 
     print("Registering Resources")
     # Register resources
@@ -65,39 +67,56 @@ def create_dataset(details):
 # - Find Standard Variables if they exist
 # - Otherwise create Standard Variables for the ones that don't
 #   - Get standard variable ids
-def create_standard_variables(stdvars):
-    if stdvars is not None and len(stdvars) > 0:
+def create_standard_variables(dsvars):
+    if dsvars is not None and len(dsvars) > 0:
+        stdvars = []
+        for dsvar in dsvars:
+            stdvars.extend(dsvar['standard_variables']) 
+       
         find_existing_json = { "name__in": list(map(lambda var: var["name"], stdvars)) }
         find_result = submit_request(FIND_STDVARS, find_existing_json)
 
-        cur_vars = {}
+        cur_stdvars = {}
         if find_result is not None and len(find_result["standard_variables"]) > 0:
             for stdvar in find_result["standard_variables"]:
-                cur_vars[stdvar["name"]] = stdvar
+                cur_stdvars[stdvar["name"]] = stdvar
 
-        new_vars = []
+        new_stdvars = []
         for stdvar in stdvars:
-            if stdvar["name"] not in cur_vars:
-                new_vars.append(stdvar)
+            if stdvar["name"] not in cur_stdvars:
+                new_stdvars.append(stdvar)
         
-        if len(new_vars) > 0:
-            register_json = { "standard_variables" : new_vars }
+        if len(new_stdvars) > 0:
+            register_json = { "standard_variables" : new_stdvars }
             register_result = submit_request(REGISTER_STDVARS, register_json)
             if register_result is not None and len(register_result["standard_variables"]) > 0:
                 for stdvar in register_result["standard_variables"]:
                     stdvar["id"] = stdvar["record_id"]
-                    cur_vars[stdvar["name"]] = stdvar        
+                    cur_stdvars[stdvar["name"]] = stdvar        
         
-        return cur_vars.values()
+        new_dsvars = []
+        for dsvar in dsvars:
+            new_dsvar = {
+                "name": dsvar["name"],
+                "metadata": dsvar["metadata"],
+                "standard_variable_ids": []
+            }
+            for stdvar in dsvar["standard_variables"]:
+                stdvarname = stdvar["name"]
+                if stdvarname in cur_stdvars:
+                    new_dsvar["standard_variable_ids"].append(cur_stdvars[stdvarname])
+            
+            new_dsvars.append(new_dsvar)
+
+        return new_dsvars
 
 
 # - Create dataset variables
 #   - name, [standard_variable_ids], dataset_id
-def create_dataset_variables(dsid, stdvars):
-    if dsid is not None and stdvars is not None and len(stdvars) > 0:
-        dsvars = []
-        for stdvar in stdvars:
-            dsvars.append({"standard_variable_ids":[stdvar["id"]],"name":stdvar["name"],"dataset_id":dsid})
+def create_dataset_variables(dsid, dsvars):
+    if dsid is not None and dsvars is not None and len(dsvars) > 0:
+        for dsvar in dsvars:
+            dsvar["dataset_id"] = dsid
         register_json = { "variables": dsvars }
         register_result = submit_request(REGISTER_DSVARS, register_json)
         if register_result is not None:
@@ -132,6 +151,15 @@ def get_resources_json(resources):
             return json.load(infile)
 
 
+# Fetch variables from json
+# - If variables is a string, read from file, otherwise read variables list
+def get_variables_json(variables):
+    if isinstance(variables, list):
+        return variables
+    if isinstance(variables, str):
+        with open(variables, "r") as infile:
+            return json.load(infile)
+
 # Helper function to submit a request to the data catalog
 def submit_request(url, json):
     r = requests.post(DCAT + url, json=json)
@@ -148,16 +176,24 @@ def divide_chunks(l, n):
     for i in range(0, len(l), n): 
         yield l[i:i + n]
 
-parser = argparse.ArgumentParser(description='Register a dataset')
-parser.add_argument('FILE',  help='dataset details file')
-parser.add_argument('DATA_CATALOG_URL', help='data catalog url', default="https://data-catalog.mint.isi.edu")
-parser.add_argument('PROVENANCE_ID', help='provenance id of the user', default="9ef60317-5da5-4050-8bbc-7d6826fee49f")
 
-args = parser.parse_args()
-DCAT = args.DATA_CATALOG_URL
-PROVID = args.PROVENANCE_ID
+def main():
+    global DCAT, PROVID
+    
+    parser = argparse.ArgumentParser(description='Register a dataset')
+    parser.add_argument('FILE',  help='dataset details file')
+    parser.add_argument('DATA_CATALOG_URL', help='data catalog url', default="https://data-catalog.mint.isi.edu")
+    parser.add_argument('PROVENANCE_ID', help='provenance id of the user', default="9ef60317-5da5-4050-8bbc-7d6826fee49f")
 
-with open(args.FILE, "r") as detailsfile:
-    details = json.load(detailsfile)
-    register_dataset(details)
-    sync_datasets_metadata()
+    args = parser.parse_args()
+    DCAT = args.DATA_CATALOG_URL
+    PROVID = args.PROVENANCE_ID
+
+    with open(args.FILE, "r") as detailsfile:
+        details = json.load(detailsfile)
+        register_dataset(details)
+        sync_datasets_metadata()
+
+
+if __name__=="__main__":
+    main()
