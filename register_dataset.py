@@ -1,4 +1,5 @@
 import requests
+import logging
 import json
 import argparse
 
@@ -14,6 +15,7 @@ REGISTER_DSVARS = "/datasets/register_variables"
 REGISTER_RESOURCES = "/datasets/register_resources"
 RESOURCE_CHUNK_SIZE = 500
 SYNC_DSMETA = "/datasets/sync_datasets_metadata"
+PROVENANCE_URL = "/provenance/register_provenance"
 
 def register_dataset(details):
     dsid = None
@@ -118,7 +120,7 @@ def create_dataset_variables(dsid, dsvars):
         for dsvar in dsvars:
             dsvar["dataset_id"] = dsid
         register_json = { "variables": dsvars }
-        register_result = submit_request(REGISTER_DSVARS, register_json)
+        register_result = (REGISTER_DSVARS, register_json)
         if register_result is not None:
             return register_result["variables"]
 
@@ -162,7 +164,13 @@ def get_variables_json(variables):
 
 # Helper function to submit a request to the data catalog
 def submit_request(url, json):
-    r = requests.post(DCAT + url, json=json)
+    try:
+        r = requests.post(DCAT + url, json=json)
+        r.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        logging.error(r.json())
+        logging.error("Error request", exc_info=True)
+        exit(1)
     if r.status_code == 200:
         result = r.json()
         if result["result"] == "success":
@@ -177,6 +185,23 @@ def divide_chunks(l, n):
         yield l[i:i + n]
 
 
+def create_provenance_id(provenance_id):
+    provenance_definition = {
+        "provenance": {
+            "provenance_type": "user",
+            "record_id": provenance_id,
+            "name": "test_api_outside",
+            "metadata": {"contact_information": {"email": "email@example.com"}}
+        }
+    }
+    try:
+        r = requests.post(f"""{DCAT}{PROVENANCE_URL}""", json=provenance_definition)
+        r.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        logging.error(r.json())
+        logging.error("Error request", exc_info=True)
+        exit(1)
+
 def main():
     global DCAT, PROVID
     
@@ -189,8 +214,9 @@ def main():
     DCAT = args.DATA_CATALOG_URL
     PROVID = args.PROVENANCE_ID
 
-    with open(args.FILE, "r") as detailsfile:
-        details = json.load(detailsfile)
+    create_provenance_id(PROVID)
+    with open(args.FILE, "r") as details_file:
+        details = json.load(details_file)
         register_dataset(details)
         sync_datasets_metadata()
 
