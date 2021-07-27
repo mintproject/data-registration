@@ -1,0 +1,38 @@
+[
+   {
+      "data_url": "https://data.mint.isi.edu/files/soil/horn_of_africa/sg_006966.soil", 
+      "name": "sg_006966.soil", 
+      "resource_type": "CSV", 
+      "metadata": {
+         "spatial_coverage": {
+            "type": "Point", 
+            "value": {
+               "y": "-31.958333332999928", 
+               "x": "18.458333333000041"
+            }
+         }, 
+         "temporal_coverage": {
+            "start_time": "1850-01-01T00:00:00", 
+            "end_time": "2050-01-01T00:00:00"
+         }
+      }
+   }, 
+   {
+      "data_url": "https://data.mint.isi.edu/files/soil/horn_of_africa/sg_006971.soil", 
+      "name": "sg_006971.soil", 
+      "resource_type": "CSV", 
+      "metadata": {
+         "spatial_coverage": {
+            "type": "Point", 
+            "value": {
+               "y": "-31.958333332999928", 
+               "x": "18.375000001000046"
+            }
+         }, 
+         "temporal_coverage": {
+            "start_time": "1850-01-01T00:00:00", 
+            "end_time": "2050-01-01T00:00:00"
+         }
+      }
+   }
+]

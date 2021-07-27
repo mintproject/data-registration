@@ -1,0 +1,155 @@
+[
+    {
+        "name": "bulk density",
+        "metadata": {
+            "label": "bulk density",
+            "units": "Mg m-3",
+            "data_type": "float",
+            "type": "numerical.continuous"
+        },
+        "standard_variables": [
+            {
+                "name": "soil~no-rock~dry__mass-per-volume_density",
+                "ontology": "SVO",
+                "uri": "http:\/\/www.geoscienceontology.org\/svo\/svl\/variable#soil%7Eno-rock%7Edry__mass-per-volume_density",
+                "description": ""
+            }
+        ]
+    },
+    {
+        "name": "silt percentage",
+        "metadata": {
+            "label": "silt percentage",
+            "units": "%",
+            "data_type": "float",
+            "type": "numerical.continuous"
+        },
+        "standard_variables": [
+            {
+                "name": "soil~no-rock_silt__mass_fraction",
+                "ontology": "SVO",
+                "uri": "http:\/\/www.geoscienceontology.org\/svo\/svl\/variable#soil%7Eno-rock%40medium_silt__mass_fraction",
+                "description": ""
+            }
+        ]
+    },
+    {
+        "name": "rock volume",
+        "metadata": {
+            "label": "rock volume",
+            "units": "m3 m-3",
+            "data_type": "float",
+            "type": "numerical.continuous"
+        },
+        "standard_variables": [
+            {
+                "name": "soil_rock__volume_fraction",
+                "ontology": "SVO",
+                "uri": "http:\/\/www.geoscienceontology.org\/svo\/svl\/variable#soil%40medium_rock__volume_fraction",
+                "description": ""
+            }
+        ]
+    },
+    {
+        "name": "soil curve number",
+        "metadata": {
+            "label": "soil curve number",
+            "units": "",
+            "data_type": "float",
+            "type": "numerical.continuous"
+        },
+        "standard_variables": [
+            {
+                "name": "land_surface_water__usdanrcs_runoff_curve_number",
+                "ontology": "SVO",
+                "uri": "http:\/\/www.geoscienceontology.org\/svo\/svl\/variable#%28land_surface%29%40context%7Eon_%28water_runoff%29__usdanrcs_runoff_curve_number",
+                "description": ""
+            }
+        ]
+    },
+    {
+        "name": "soil layer thickness",
+        "metadata": {
+            "label": "soil layer thickness",
+            "units": "m",
+            "data_type": "float",
+            "type": "numerical.continuous"
+        },
+        "standard_variables": [
+            {
+                "name": "soil_layer__thickness",
+                "ontology": "SVO",
+                "uri": "http:\/\/www.geoscienceontology.org\/svo\/svl\/variable#soil_layer__thickness",
+                "description": ""
+            }
+        ]
+    },
+    {
+        "name": "soil moisture content",
+        "metadata": {
+            "label": "soil moisture content",
+            "units": "m3 m-3",
+            "data_type": "float",
+            "type": "numerical.continuous"
+        },
+        "standard_variables": [
+            {
+                "name": "soil_water__volume_fraction",
+                "ontology": "SVO",
+                "uri": "http:\/\/www.geoscienceontology.org\/svo\/svl\/variable#soil%40medium_water__volume_fraction",
+                "description": ""
+            }
+        ]
+    },
+    {
+        "name": "slope of the field",
+        "metadata": {
+            "label": "slope of the field",
+            "units": "m m-1",
+            "data_type": "float",
+            "type": "numerical.continuous"
+        },
+        "standard_variables": [
+            {
+                "name": "land_surface__slope",
+                "ontology": "SVO",
+                "uri": "http:\/\/www.geoscienceontology.org\/svo\/svl\/variable#land_surface__slope",
+                "description": ""
+            }
+        ]
+    },
+    {
+        "name": "soil organic matter",
+        "metadata": {
+            "label": "soil organic matter",
+            "units": "kg kg-1 x-100",
+            "data_type": "float",
+            "type": "numerical.continuous"
+        },
+        "standard_variables": [
+            {
+                "name": "soil_matter~organic__mass_fraction",
+                "ontology": "SVO",
+                "uri": "http:\/\/www.geoscienceontology.org\/svo\/svl\/variable#soil%40medium_matter%7Eorganic__mass_fraction",
+                "description": ""
+            }
+        ]
+    },
+    {
+        "name": "clay percentage",
+        "metadata": {
+            "label": "clay percentage",
+            "units": "",
+            "data_type": "float",
+            "type": "numerical.continuous"
+        },
+        "standard_variables": [
+            {
+                "name": "soil_clay_particle__volume_fraction",
+                "ontology": "SVO",
+                "uri": "http:\/\/www.geoscienceontology.org\/svo\/svl\/variable#soil%40medium_%28clay_particle%29__volume_fraction",
+                "description": ""
+            }
+        ]
+    }
+]
