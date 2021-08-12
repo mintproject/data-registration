@@ -1,4 +1,4 @@
-from data_registration.netcdf import get_spatial_info, open
+from dcatregister import netcdf
 from pathlib import Path
 
 RESOURCES = "resources"

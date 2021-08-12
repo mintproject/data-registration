@@ -1,68 +1,49 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-import os
-import codecs
+"""The setup script."""
+
 from setuptools import setup, find_packages
 
+with open('README.rst') as readme_file:
+    readme = readme_file.read()
 
-def read(fname):
-    file_path = os.path.join(os.path.dirname(__file__), fname)
-    return codecs.open(file_path, encoding='utf-8').read()
+with open('HISTORY.rst') as history_file:
+    history = history_file.read()
 
-def find_package_data(dirname):
-    def find_paths(dirname):
-        items = []
-        for fname in os.listdir(dirname):
-            path = os.path.join(dirname, fname)
-            if os.path.isdir(path):
-                items += find_paths(path)
-            elif not path.endswith(".py") and not path.endswith(".pyc"):
-                items.append(path)
-        return items
+requirements = [ ]
 
-    items = find_paths(dirname)
-    return [os.path.relpath(path, dirname) for path in items]
-
-
+test_requirements = ['pytest>=3', ]
 
 setup(
-    name='data_registration',
-    version='0.1.0',
-    author='Maximiliano Osorio',
+    author="Maximiliano Osorio",
     author_email='mosorio@isi.edu',
-    maintainer='Maximiliano Osorio',
-    maintainer_email='mosorio@isi.edu',
-    license='MIT',
-    url='https://github.com/mintproject/data_registration',
-    description='Python to upload data to the MINT DataCatalog',
-    long_description=read('README.md'),
-    python_requires='>=3.5',
-    install_requires=[
-        'scipy',
-        'requests',
-        'xarray'
-    ],
+    python_requires='>=3.6',
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Framework :: Pytest',
+        'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Testing',
-        'Programming Language :: Python',
+        'License :: OSI Approved :: MIT License',
+        'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
-        'Operating System :: OS Independent',
-        'License :: OSI Approved :: MIT License',
     ],
-    package_dir={"": "src"},
-    packages=find_packages(where="src"),
-    package_data={"data_registration": find_package_data("src/data_registration")},
+    description="Python Boilerplate contains all the boilerplate you need to create a Python package.",
+    entry_points={
+        'console_scripts': [
+            'dcatregister=dcatregister.cli:main',
+        ],
+    },
+    install_requires=requirements,
+    license="MIT license",
+    long_description=readme + '\n\n' + history,
+    include_package_data=True,
+    keywords='dcatregister',
+    name='dcatregister',
+    packages=find_packages(include=['dcatregister', 'dcatregister.*']),
+    test_suite='tests',
+    tests_require=test_requirements,
+    url='https://github.com/mosoriob/dcatregister',
+    version='0.1.0',
     zip_safe=False,
 )
-
