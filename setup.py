@@ -34,7 +34,7 @@ setup(
     maintainer='Maximiliano Osorio',
     maintainer_email='mosorio@isi.edu',
     license='MIT',
-    url='https://github.com/mintproject/data-registration',
+    url='https://github.com/mintproject/data_registration',
     description='Python to upload data to the MINT DataCatalog',
     long_description=read('README.md'),
     python_requires='>=3.5',
@@ -63,5 +63,6 @@ setup(
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     package_data={"data_registration": find_package_data("src/data_registration")},
+    zip_safe=False,
 )
 
