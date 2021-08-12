@@ -1,4 +1,3 @@
-from xarray.backends.api import open_dataset
 from dcatregister.netcdf import get_spatial_info, open_dataset
 from pathlib import Path
 
