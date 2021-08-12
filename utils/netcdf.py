@@ -13,7 +13,7 @@ def open(file_name: str):
     return data
 
 def get_spatial_info(data):
-    #  Example output  {"type":"BoundingBox","value":{"xmax":"59.875","xmin":"10.125","ymax":"29.875","ymin":"-14.875"}}
+    geo_spatial_expected = {"type":"BoundingBox","value":{"xmax":"36.4","xmin":"-3.14333333","ymax":"40.76666667","ymin":"0.69"}}
     spatial_data = data.geospatial_bounds
     spatial_dict = dict()
     spatial_dict['type'] = 'BoundingBox'
