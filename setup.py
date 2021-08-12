@@ -3,12 +3,27 @@
 
 import os
 import codecs
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def read(fname):
     file_path = os.path.join(os.path.dirname(__file__), fname)
     return codecs.open(file_path, encoding='utf-8').read()
+
+def find_package_data(dirname):
+    def find_paths(dirname):
+        items = []
+        for fname in os.listdir(dirname):
+            path = os.path.join(dirname, fname)
+            if os.path.isdir(path):
+                items += find_paths(path)
+            elif not path.endswith(".py") and not path.endswith(".pyc"):
+                items.append(path)
+        return items
+
+    items = find_paths(dirname)
+    return [os.path.relpath(path, dirname) for path in items]
+
 
 
 setup(
@@ -25,7 +40,8 @@ setup(
     python_requires='>=3.5',
     install_requires=[
         'scipy',
-        'requests'
+        'requests',
+        'xarray'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -43,5 +59,9 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy',
         'Operating System :: OS Independent',
         'License :: OSI Approved :: MIT License',
-    ]
+    ],
+    package_dir={"": "src"},
+    packages=find_packages(where="src"),
+    package_data={"data_registration": find_package_data("src/data_registration")},
 )
+

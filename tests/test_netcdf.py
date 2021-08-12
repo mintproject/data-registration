@@ -1,4 +1,4 @@
-from utils.netcdf import get_spatial_info, open
+from data_registration.netcdf import get_spatial_info, open
 from pathlib import Path
 
 RESOURCES = "resources"
