@@ -1,6 +1,6 @@
 import xarray as xr
 
-def open(file_name: str):
+def open_dataset(file_name: str):
     """Open a Netcdf 
 
     Args:
