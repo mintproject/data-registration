@@ -1,6 +1,19 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 from string import Template
-def get_svo_from_netcdf(svo_name: str, sparql_endpoint: str):
+
+def get_svo_sparql(svo_name: str, sparql_endpoint: str) -> dict:
+    """Get the svo's dara required to register a DataCatalog resource
+
+    Args:
+        svo_name (str): The name of SVO. For example: land_surface_water__depth
+        sparql_endpoint (str): The enpdoint https://endpoint.mint.isi.edu/modelCatalog-1.8.0/query
+
+    Raises:
+        ValueError: Error when the query is wrong
+
+    Returns:
+        dict: Contains five attributes: metadata_label, metadata_unit, svo_unit, svo_description, svo_name
+    """
     query_string = Template("""
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -16,7 +29,7 @@ def get_svo_from_netcdf(svo_name: str, sparql_endpoint: str):
     }
     }
     LIMIT 1
-    """).substitute(svo_name=svo_name)
+    """).safe_substitute(svo_name=svo_name)
     
     sparql = SPARQLWrapper(sparql_endpoint)
 
