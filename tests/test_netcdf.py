@@ -1,4 +1,4 @@
-from dcatregister.netcdf import get_spatial_info, open_dataset
+from dcatregister.netcdf import get_spatial_info, open_dataset, get_temporal_info
 from pathlib import Path
 
 RESOURCES = "resources"
@@ -8,6 +8,12 @@ def test_open():
     data = open_dataset(resource_dir / "Test1_2D-d.nc")
     assert data
 
+
+def test_temporal_info():
+    data = open_dataset(resource_dir / "Test1_2D-d.nc")
+    temporal_info = get_temporal_info(data)
+    temporal_info_excepted = {'start_time': '2017-01-01T00:00:00', 'end_time': '2017-01-31T22:00:00'} 
+    assert temporal_info == temporal_info_excepted
 
 def test_spatial_info():
     data = open_dataset(resource_dir / "Test1_2D-d.nc")
