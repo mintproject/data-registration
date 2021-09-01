@@ -1,7 +1,7 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 from string import Template
 
-def get_svo_sparql(svo_name: str, sparql_endpoint: str) -> dict:
+def get_svo_sparql(svo_name: str, sparql_endpoint="https://endpoint.mint.isi.edu/modelCatalog-1.8.0/query": str) -> dict:
     """Get the svo's dara required to register a DataCatalog resource
 
     Args:
