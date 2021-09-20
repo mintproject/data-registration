@@ -1,7 +1,7 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 from string import Template
 
-def get_svo_sparql(svo_name: str, sparql_endpoint: str) -> dict:
+def get_svo_sparql(svo_name: str, sparql_endpoint: str = "https://endpoint.mint.isi.edu/modelCatalog-1.8.0/query" ) -> dict:
     """Get the svo's dara required to register a DataCatalog resource
 
     Args:
@@ -49,7 +49,50 @@ def get_svo_sparql(svo_name: str, sparql_endpoint: str) -> dict:
     return {
         'metadata_label': new_var['metadata_label']['value'],
         'metadata_unit': new_var['metadata_unit']['value'],
-        'svo_uri': new_var['metadata_label']['value'],
-        'svo_description': new_var['metadata_label']['value'],
+        'svo_uri': new_var['svo_uri']['value'],
+        'svo_description': new_var['svo_description']['value'],
         'svo_name': svo_name
+    }
+
+def create_resource_metadata(
+        name, 
+        svo_name: str,
+        metadata_label: str = '',
+        metadata_unit: str = '',
+        svo_description: str = '',
+        svo_uri: str = '',
+        data_type="float",
+        _type='numerical.continous'
+    ):
+    """Create the metadata for a new Data Catalog resource. Following the Data Catalog Standard. 
+
+    Args:
+        name (str): Resource name
+        svo_name (str): Svo name
+        metadata_label (str, optional): A label about the resource. Defaults to ''.
+        metadata_unit (str, optional): Units. Defaults to ''.
+        svo_description (str, optional): Description SVO Defaults to ''.
+        svo_uri (str, optional): URI SVO. Defaults to ''.
+        data_type (str, optional): Data Type TODO: This is fixed. Defaults to "float".
+        _type (str, optional): Type: TODO:This is fixed. Defaults to 'numerical.continous'.
+
+    Returns:
+        [dict]: The new resource
+    """
+    return {
+        "name": name,
+        "metadata": {
+            "label": metadata_label,
+            "units": metadata_unit,
+            "data_type":  data_type,
+            "type": _type
+        },
+        "standard_variables": [
+            {
+                "name": svo_name,
+                "ontology": "SVO",
+                "uri": svo_uri,
+                "description": svo_description
+            }
+        ]
     }
