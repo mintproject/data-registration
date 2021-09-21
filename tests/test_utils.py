@@ -1,4 +1,4 @@
-from dcatregister.utils import create_resource_metadata, get_svo_sparql
+from dcatregister.utils import create_variable_metadata, get_svo_sparql
 
 
 def test_get_svo_from_netcdf():
@@ -30,7 +30,7 @@ def test_create_entry_datacatalog_variable():
         'svo_name': 'land_surface_water__depth'
     }
     test_name = "Topoflow example 2 dimensional from ethiopia"
-    create_resource_metadata(
+    create_variable_metadata(
         name=test_name,
         metadata_label=data['metadata_label'],
         metadata_unit=data['metadata_unit'],
@@ -47,7 +47,7 @@ def test_create_entry_datacatalog_variable_without_info():
     data = {
     }
     test_name = "Topoflow example 2 dimensional from ethiopia"
-    create_resource_metadata(
+    create_variable_metadata(
         name=test_name,
         svo_name=svo_name,
     )

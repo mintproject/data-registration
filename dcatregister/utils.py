@@ -54,7 +54,7 @@ def get_svo_sparql(svo_name: str, sparql_endpoint: str = "https://endpoint.mint.
         'svo_name': svo_name
     }
 
-def create_resource_metadata(
+def create_variable_metadata(
         name, 
         svo_name: str,
         metadata_label: str = '',
@@ -64,10 +64,10 @@ def create_resource_metadata(
         data_type="float",
         _type='numerical.continous'
     ):
-    """Create the metadata for a new Data Catalog resource. Following the Data Catalog Standard. 
+    """Create the metadata for a new Data Catalog variable. Following the Data Catalog Standard. 
 
     Args:
-        name (str): Resource name
+        name (str): Variable name
         svo_name (str): Svo name
         metadata_label (str, optional): A label about the resource. Defaults to ''.
         metadata_unit (str, optional): Units. Defaults to ''.
@@ -77,7 +77,7 @@ def create_resource_metadata(
         _type (str, optional): Type: TODO:This is fixed. Defaults to 'numerical.continous'.
 
     Returns:
-        [dict]: The new resource
+        [dict]: The new variable
     """
     return {
         "name": name,
