@@ -1,6 +1,8 @@
 import xarray as xr
 import datetime
 
+VARIABLES_EXCLUDED = ['time', 'datetime', 'latitude', 'longitude']
+
 def open_dataset(file_name: str):
     """Open a Netcdf 
 
@@ -38,6 +40,19 @@ def get_temporal_info(data):
         t['end_time'] = date_end.isoformat()
     return t
 
+def get_svo(data: dict):
+    """Get svo from a Netcdf xrray dataset
+
+    Args:
+        data (dict): The xarray data
+    """
+    svo = []
+    for name, variable  in data.variables.items():
+        attr = variable.attrs
+        if attr['long_name'] not in VARIABLES_EXCLUDED:
+            svo.append(attr['long_name'])
+    return svo
+            
 
 if __name__ == '__main__':
     PATH = '../../Topoflow_Galana/Test1_2D-Q_1.nc'
