@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "dcatregister/netcdf_register.py",
+      "console": "integratedTerminal",
+      "args": [
+        "tests/resources/Test1_2D-d-flood.nc.1",
+        "--dataset_name",
+        "test",
+        "--dataset_description",
+        "A dataset testing",
+        "--dataset_id",
+        "b"
+      ]
+    }
+  ]
+}
