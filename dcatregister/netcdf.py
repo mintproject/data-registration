@@ -53,7 +53,6 @@ def get_svo(data: dict):
             svo.append(attr['long_name'])
     return svo
             
-
 if __name__ == '__main__':
     PATH = '../../Topoflow_Galana/Test1_2D-Q_1.nc'
     data = open_dataset(PATH)

@@ -1,190 +1,157 @@
-import requests
-import logging
-import json
 import argparse
-import xarray as xr
-from utils import get_svo_sparql
-from netcdf import get_svo, get_spatial_info, get_temporal_info
+import os
+import json
+import logging
+from dcatregister.api import Datacatalog
+from dcatregister.netcdf import get_spatial_info, get_svo, get_temporal_info, open_dataset
+from dcatregister.utils import create_variable_metadata, get_svo_sparql
 
-global DCAT, PROVID
 
-PROVID = None #"9ef60317-5da5-4050-8bbc-7d6826fee49f"
-DATACATALOG_URL = 'https://datacatalog.dev.mint.isi.edu/'
-REGISTER_DATA = "/datasets/register_datasets"
-FIND_DATASET = "/datasets/find"
-FIND_STDVARS = "/knowledge_graph/find_standard_variables"
-REGISTER_STDVARS = "/knowledge_graph/register_standard_variables"
-REGISTER_DSVARS = "/datasets/register_variables"
-REGISTER_RESOURCES = "/datasets/register_resources"
-RESOURCE_CHUNK_SIZE = 500
-SYNC_DSMETA = "/datasets/sync_datasets_metadata"
-PROVENANCE_URL = "/provenance/register_provenance"
-
-def open_dataset(file_name: str):
-    """Open a Netcdf 
-
-    Args:
-        file_name (str): [description]
-
-    Returns:
-        [type]: [description]
-    """
-    data=xr.open_dataset(file_name)
-    return data
-
-def submit_request(url, json):
-    try:
-        r = requests.post(DATACATALOG_URL + url, json=json)
-        r.raise_for_status()
-    except requests.exceptions.HTTPError as err:
-        logging.error(r.json())
-        logging.error("Error request", exc_info=True)
-        exit(1)
-    if r.status_code == 200:
-        result = r.json()
-        if result["result"] == "success":
-            return result
-    return None
-
-def create_standard_variables(stdvars):
-    if stdvars is not None and len(stdvars) > 0:
-        std_var_ids = []
-
-        find_existing_json = { "name__in": stdvars }
-        find_result = submit_request(FIND_STDVARS, find_existing_json)
-        #print('find result : ',find_result)
-
-        cur_stdvars = {}
-        if find_result is not None and len(find_result["standard_variables"]) > 0:
-            for stdvar in find_result["standard_variables"]:
-                cur_stdvars[stdvar["name"]] = stdvar
-                std_var_ids.append(stdvar['id'])
-        print('cur_stdvars : ', cur_stdvars)
-        print('std_var_ids : ', std_var_ids)
-
-        new_stdvars = []
-        for stdvar in stdvars:
-            if stdvar not in cur_stdvars:
-                new_stdvars.append(stdvar)
-        
-        if len(new_stdvars) > 0:
-            standard_variables = []
-            for name in new_stdvars:
-                std_var = {
-                    "name": name,
-                    "ontology": "MyOntology",  # where do I get this? => use dummy data for now
-                    "uri": "http://my_ontology_uri.org/standard_names/" + name
-                }
-                standard_variables.append(std_var)
-            register_json = { "standard_variables" : standard_variables }
-            register_result = submit_request(REGISTER_STDVARS, register_json)
-            print('register_result : ', register_result["standard_variables"])
-
-            if register_result is not None and len(register_result["standard_variables"]) > 0:
-                for stdvar in register_result["standard_variables"]:
-                    std_var_ids.append(stdvar["record_id"])
-                    cur_stdvars[stdvar["name"]] = stdvar        
-        return  std_var_ids
-
-def register_dataset(dataset_id, provenance_id, description):
-    find_existing_json = { "dataset_ids__in": [dataset_id] }
-    find_result = submit_request(FIND_DATASET, find_existing_json)
-    print('find dataset result : ', find_result)
-    if find_result is not None and len(find_result["datasets"]) > 0:
-        # Get dataset id
-        # ???
-        pass
-    else:
-        # Register dataset
-        print("Registering dataset")
-        dsid = create_dataset(dataset_id, provenance_id, description)
-
-        # print("Registering Variables")
-        # # Register standard variables
-        # if "standard_variables" in details:
-        #     dsvars = create_standard_variables(details["variables"])
-        #     create_dataset_variables(dsid, dsvars)
-
-def create_dataset(dataset_id, provenance_id, description):
-    json = {
-        "datasets": [
-            {
-            "record_id": dataset_id,
-            "provenance_id": provenance_id, #? where will i get this from? => ip parameter
-            "name": "temp name",                # where will i get this from? => ip parameter
-            "description": description,
-            #"metadata": details["metadata"]             #where will i get this from? => not required
-            }
-        ]
+def create_dataset_file_content(name, description, temporal_coverage, data_type, directory):
+    return {
+        "name": name,
+        "description": description,
+        "metadata": {
+            "temporal_coverage": temporal_coverage,
+            "datatype": data_type,
+        },
+        "resources": os.path.join(directory,"resources.json"),
+        "variables": os.path.join(directory,"variables.json")
     }
-    result = submit_request(REGISTER_DATA, json)
-    print('Result : ', result)
-    if result is None or len(result["datasets"]) == 0:
-        return None
-    
-    dsid = result["datasets"][0]["record_id"]    
-    return dsid                                         # what should i return?
 
-def create_dataset_variables(dsid, variables, std_var_ids):
-    if dsid is not None and variables is not None and len(variables) > 0:
-        dsvars = []
-        for dsvar in variables:
-            print('dsvar : ', dsvar)
-            temp = {}
-            temp["dataset_id"] = dsid
-            temp["name"] = dsvar["long_name"]
-            temp["metadata"] = {
-                "units" : dsvar["units"]
-            }
-            temp["standard_variable_ids"] = std_var_ids
-            dsvars.append(temp)
-        register_json = { "variables": dsvars }
-        register_result = (REGISTER_DSVARS, register_json)
-        if register_result is not None:
-            return register_result[1]["variables"]
 
 def main():
-    global DCAT, PROVID
-    
     parser = argparse.ArgumentParser(description='Register a dataset')
-    #parser.add_argument('FILE',  help='dataset details file')
-    parser.add_argument('DATASET_ID', help='dataset id', default="")
-    #parser.add_argument('PROVENANCE_ID', help='provenance id of the user', default="9ef60317-5da5-4050-8bbc-7d6826fee49f")
+    parser.add_argument('files',
+                        metavar='files',
+                        type=str,
+                        nargs='+',
+                        help='dataset details file'
+                        )
+    parser.add_argument('--dataset_id',
+                        help='The dataset name',
+                        required=True
+                        )
+    parser.add_argument('--dataset_name',
+                        help='The dataset name',
+                        required=True
+                        )
+    parser.add_argument('--dataset_description',
+                        help='Dataset description',
+                        required=True
+                        )
+    parser.add_argument('-p',
+                        '--provenance_id',
+                        help='provenance id of the user',
+                        required=False,
+                        default="9ef60317-5da5-4050-8bbc-7d6826fee49f",
+                        )
 
+    parser.add_argument(
+        '--url',
+        help='The datacatalog url',
+        required=False,
+        default="https://datacatalog.dev.mint.isi.edu/",
+    )
+
+    # Parse argprovenance_id, datacatalog_url
     args = parser.parse_args()
-    dataset_id = args.DATASET_ID
-    PATH = '../../Topoflow_Galana/Test1_2D-Q_1.nc'
-    data = open_dataset(PATH)
-    #print(data.metadata)
-    var = data.variables
-    print(var) # => register all variables which are not latitude, longitude and time
-    n = len(var)
-    sql_query_url = 'https://endpoint.mint.isi.edu/modelCatalog-1.8.0/query' #for getting uri and ontology information
-    register_std_variables = []
+    files = args.files
+    dataset_id = args.dataset_id
+    dataset_description = args.dataset_description
+    dataset_name = args.dataset_name
+    provenance_id = args.provenance_id
+    datacatalog_url = args.url
+
+
+    dataset_directory = os.path.join(os.getcwd(), dataset_id)
+    dataset_parent_file = os.path.join(dataset_directory, "dataset.json")
+
+    datacatalog = Datacatalog(datacatalog_url, provenance_id)
+
+    # Create directories and files
+
+    if not os.path.exists(dataset_directory):
+        os.mkdir(dataset_directory)
+    resource_file_path = os.path.join(dataset_directory, 'resources.json')
+    dataset_file_path = os.path.join(dataset_directory, 'dataset.json')
+    variables_file_path = os.path.join(dataset_directory, 'variables.json')
+    try:
+        resource_file = open(resource_file_path, 'w', encoding='utf8')
+        dataset_file = open(dataset_file_path, 'w', encoding='utf8')
+        variable_file = open(variables_file_path, 'w', encoding='utf8')
+    except TypeError as error:
+        logging.error(error)
+        exit(1)
+    # Store the variables and resources
     variables = []
-    
+    resources = []
+    dataset_temporal_coverage = {'start_time': None, 'end_time': None}
+
+    # Loop the files
+    for _f in files:
+        data = open_dataset(_f)
+        try:
+            name = data.attrs['title']
+        except:
+            name = os.path.basename(_f)
+        variables = extract_variables_netcdf(data)
+        resource = extract_resource_netcdf(name, data)
+        start_time = resource['metadata']['temporal_coverage']['start_time']
+        end_time = resource['metadata']['temporal_coverage']['end_time']
+        if not dataset_temporal_coverage['start_time'] or start_time < dataset_temporal_coverage['start_time']:
+            dataset_temporal_coverage['start_time'] = start_time
+        if not dataset_temporal_coverage['end_time'] or end_time > dataset_temporal_coverage['end_time']:
+            dataset_temporal_coverage['end_time'] = end_time
+        resources.append(resource)
+
+    # Write the JSON definition files
+    dataset = create_dataset_file_content(
+        dataset_name, dataset_description, dataset_temporal_coverage, '', dataset_directory)
+    print(dataset)
+    variable_file.write(json.dumps(variables, indent=4))
+    resource_file.write(json.dumps(resources, indent=4))
+    dataset_file.write(json.dumps(dataset, indent=4))
+    variable_file.close()
+    resource_file.close()
+    dataset_file.close()
+    datacatalog.create_provenance_id(provenance_id)
+    print(dataset_parent_file)
+    with open(dataset_parent_file) as details_file:
+        details = json.load(details_file)
+        datacatalog.register_dataset(details)
+        datacatalog.sync_datasets_metadata()
+
+
+def extract_resource_netcdf(name, data):
+    resource = {
+        'name': name,
+        "resource_type": "CSV",
+        "data_url": "http://",
+        "metadata": {
+            "temporal_coverage": get_temporal_info(data),
+            "spatial_coverage": get_spatial_info(data)
+        }
+    }
+    return resource
+
+
+def extract_variables_netcdf(data):
+    variables = []
     svo_names = get_svo(data)
-    for svo in svo_names:
-        svo_data = get_svo_sparql(v.attrs['svo_name'], sql_query_url)
-        if len(svo_data) > 0:
-            print('svo_data : ', svo_data)
-        else:
-            register_std_variables.append(v.attrs['svo_name'])
-
-    std_var_ids = create_standard_variables(register_std_variables)
-    
-    #provenance_id = args.PROVENANCE_ID
-    description = data.title
-    register_dataset(dataset_id, '9ef60317-5da5-4050-8bbc-7d6826fee49f', description)
-
-    dataset_vars = create_dataset_variables(dataset_id, variables, std_var_ids)
-
-    #create_provenance_id(PROVID)
-    # with open(args.FILE, "r") as details_file:
-    #     details = json.load(details_file)
-    #     register_dataset(details)
-    #     sync_datasets_metadata()
+    for svo_name in svo_names:
+        svo_data = get_svo_sparql(svo_name)
+        variable = create_variable_metadata(
+            name=svo_data['metadata_label'],
+            metadata_label=svo_data['metadata_label'],
+            metadata_unit=svo_data['metadata_unit'],
+            svo_name=svo_data['svo_name'],
+            svo_description=svo_data['svo_description'],
+            svo_uri=svo_data['svo_uri']
+        )
+        variables.append(variable)
+    return variables
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
