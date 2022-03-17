@@ -1,0 +1,22 @@
+{
+  "name": "Well-files-for-Texas",
+  "description": "Well files for texas",
+  "metadata": {
+    "temporal_coverage": {
+      "start_time": "1850-01-01T00:00:00",
+      "end_time": "2050-01-01T00:00:00"
+    },
+    "spatial_coverage": {
+      "type": "BoundingBox",
+      "value": {
+        "xmin": -180.0,
+        "ymin": -60.0,
+        "xmax": 180.0,
+        "ymax": 90.0
+      }
+    },
+    "datatype": "WellFile"
+  },
+  "resources": "resources.json",
+  "variables": "variables.json"
+}

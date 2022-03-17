@@ -2,19 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Current File",
+      "name": "Data Catalog",
       "type": "python",
       "request": "launch",
-      "program": "dcatregister/netcdf_register.py",
+      "program": "register_dataset.py",
       "console": "integratedTerminal",
       "args": [
-        "tests/resources/Test1_2D-d-flood.nc.1",
-        "--dataset_name",
-        "test",
-        "--dataset_description",
-        "A dataset testing",
-        "--dataset_id",
-        "b"
+        "example/modflow-well/dataset.json",
+        "https://datacatalog.dev.mint.isi.edu",
+        "9ef60317-5da5-4050-8bbc-7d6826fee49f"
       ]
     }
   ]

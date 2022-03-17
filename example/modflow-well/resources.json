@@ -1,0 +1,17 @@
+[
+  {
+    "name": "BARTON_SPRINGS_2001_2010DROUGHT.wel",
+    "resource_type": "WellFile",
+    "data_url": "https://data.mint.isi.edu/files/sample-inputs-outputs/modflowInputs/BARTON_SPRINGS_2001_2010DROUGHT.wel",
+    "metadata": {
+      "temporal_coverage": {
+        "start_time": "2001-01-01T00:00:00",
+        "end_time": "2010-01-01T00:00:00"
+      },
+      "spatial_coverage": {
+        "type": "Point",
+        "value": { "x": "30.3075", "y": "-97.730278" }
+      }
+    }
+  }
+]

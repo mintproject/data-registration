@@ -1,0 +1,19 @@
+[
+    {
+        "name": "volumetric_recharge_rate",
+        "metadata": {
+            "label": "volumetric recharge rate",
+            "units": "m/h",
+            "data_type": "float",
+            "type": "numerical.continuous"
+        },
+        "standard_variables": [
+            {
+                "name": "groundwater_well__recharge_volume_flux ",
+                "ontology": "SVO",
+                "uri": "http:\/\/www.geoscienceontology.org\/svo\/svl\/variable#groundwater_well__recharge_volume_flux ",
+                "description": ""
+            }
+        ]
+    }
+]
