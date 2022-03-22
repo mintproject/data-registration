@@ -7,13 +7,8 @@
       "end_time": "2050-01-01T00:00:00"
     },
     "spatial_coverage": {
-      "type": "BoundingBox",
-      "value": {
-        "xmin": -180.0,
-        "ymin": -60.0,
-        "xmax": 180.0,
-        "ymax": 90.0
-      }
+      "type": "Point",
+      "value": { "x": -97.730278, "y": 30.3075 }
     },
     "datatype": "WellFile"
   },

@@ -14,7 +14,7 @@ REGISTER_STDVARS = "/knowledge_graph/register_standard_variables"
 REGISTER_DSVARS = "/datasets/register_variables"
 REGISTER_RESOURCES = "/datasets/register_resources"
 RESOURCE_CHUNK_SIZE = 500
-SYNC_DSMETA = "/datasets/sync_datasets_metadata"
+SYNC_DSMETA = "/datasets/sync_dataset_metadata"
 PROVENANCE_URL = "/provenance/register_provenance"
 
 
@@ -47,10 +47,14 @@ def register_dataset(details: dict):
     resources = get_resources_json(details["resources"])
     if resources is not None and len(resources) > 0:
         create_resources(dsid, resources)
+    return dsid
 
 
-def sync_datasets_metadata():
-    r = requests.post(DCAT + SYNC_DSMETA, headers={"Connection": "keep-alive"})
+def sync_dataset_metadata(dsid):
+    payload = {
+        "dataset_id": dsid
+    }
+    submit_request(SYNC_DSMETA, payload, True)
 
 
 def create_dataset(details):
@@ -214,7 +218,7 @@ def get_json_from_path(path):
 
 
 # Helper function to submit a request to the data catalog
-def submit_request(url: str, payload: dict) -> dict:
+def submit_request(url: str, payload: dict, skipReturn=False) -> dict:
     """Send a HTTP request to the datacatalog server
 
     Args:
@@ -232,12 +236,13 @@ def submit_request(url: str, payload: dict) -> dict:
         logging.error("Error request", exc_info=True)
         exit(1)
     if r.status_code == 200:
-        result = r.json()
-        if result["result"] == "success":
-            print(result)
-            return result
-        else:
-            logging.error(f"Response is not success {result}")
+        if not skipReturn:
+            result = r.json()
+            if result["result"] == "success":
+                print(result)
+                return result
+            else:
+                logging.error(f"Response is not success {result}")
     else:
         logging.error("Error request")
     return None
@@ -296,8 +301,8 @@ def main():
         dir_name = os.path.dirname(os.path.join(os.getcwd(), args.FILE))
         os.chdir(dir_name)
         details = json.load(details_file)
-        register_dataset(details)
-        sync_datasets_metadata()
+        dsid = register_dataset(details)
+        sync_dataset_metadata(dsid)
 
 
 if __name__ == "__main__":
