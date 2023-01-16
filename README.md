@@ -36,7 +36,7 @@ You must set up the server and provenance id.
 - Provenance id: For testing purposes, we recommend to use the id: `9ef60317-5da5-4050-8bbc-7d6826fee49f`
 
 ```bash
-DATA_CATALOG_URL="https://datacatalog.dev.mint.isi.edu"
+DATA_CATALOG_URL="https://data-catalog.dev.mint.isi.edu"
 PROVENANCE_ID="9ef60317-5da5-4050-8bbc-7d6826fee49f"
 cd example/small_soil
 python ../../register_dataset.py ./dataset.json ${DATA_CATALOG_URL} ${PROVENANCE_ID}
